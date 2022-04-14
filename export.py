@@ -7,14 +7,7 @@ import argparse
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
-MERAKE_NETWORK_ID = "L_658651445502938472"
-
-OUTPUT_NETEVENTS_JSON = "network_events.json"
-OUTPUT_NETEVENTS_CSV = "network_events.csv"
-
 PAGE_SIZE = 1000
-
-
 
 
 def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
