@@ -6,6 +6,7 @@ import time
 import argparse
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+import os
 
 PAGE_SIZE = 1000
 
@@ -69,13 +70,13 @@ if __name__ == "__main__":
   neJSON = None
   
   if args.json:
-    neJSON = open(OUTPUT_NETEVENTS_JSON, "w")
+    neJSON = open(args.json, "w")
 
   neCSV  = None
   neCSVwriter = None
   
   if args.csv:
-    neCSV  = open(OUTPUT_NETEVENTS_CSV, "w")
+    neCSV  = open(args.csv, "w")
 
     fieldnames = ["occurredAt", "networkId", "type", "description", "clientId", "clientDescription", "deviceSerial", "deviceName", "ssidNumber", "ssidName", "eventData"]
     neCSVwriter = csv.DictWriter(neCSV, fieldnames=fieldnames)
