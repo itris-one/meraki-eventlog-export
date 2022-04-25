@@ -8,10 +8,11 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 import os
 
+
 PAGE_SIZE = 1000
 
-
 def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
+  """Helper function for handling http retries and pagination parameters"""
   params["perPage"] = pageSize
   if endingBefore:
     params["endingBefore"] = endingBefore
@@ -19,7 +20,7 @@ def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
   try:
     response = re.get(baseURL, params=params)
   except requests.exceptions.ConnectionError:
-    print("Connection Error, retry in 10s")
+    log.warning("Connection error, retry in 10s")
     time.sleep(10)
     return readPage(re, baseURL, pageSize=pageSize, **params)    
 
@@ -28,12 +29,19 @@ def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
     return page["events"], page['pageStartAt'], page['pageEndAt'], len(page["events"]) == pageSize
 
   elif response.status_code == 429:
-    print("API Limit reached, wait %ss" % response.headers["Retry-After"])
+    log.warning("API limit reached, wait %ss" % response.headers["Retry-After"])
     time.sleep(int(response.headers["Retry-After"]))
     return readPage(re, baseURL, pageSize=pageSize, **params)
   
+  elif response.status_code == 404: # Eventlog is empty
+    log.error("Invalid network-id")
+    exit(1)
+  elif response.status_code == 401:
+    log.error("Authentication failed, is the api-key correct?")
+    exit(1)
   else:
-    return [], 0, 0, 0
+    log.error("Unhandled status code %s" % (response.status_code))
+    exit(1)
 
 
 
@@ -56,7 +64,6 @@ if __name__ == "__main__":
   parser.add_argument('-v', '--verbose', action='store_const', const=True, help='verbose mode')
     
   args = parser.parse_args()
-  
   
   re = requests.Session()
   re.headers['X-Cisco-Meraki-API-Key'] = args.api_key
@@ -94,22 +101,25 @@ if __name__ == "__main__":
     neCSVwriter.writeheader()
 
   eventCount = 0
-  while fullPage:
+  while fullPage: # Continue as long as the number of results is equal to the page size.
     pageNum += 1
 
-    print("## Request Page %s (before %s)" % (pageNum, startAt))
+    print("Requesting page %s (before %s)" % (pageNum, startAt))
+    # API Documentation: https://developer.cisco.com/meraki/api/#!get-network-events
     pageEvents, startAt, endAt, fullPage = readPage(re, "https://api.meraki.com/api/v1/networks/%s/events" % args.network_id, productType=args.product_type, pageSize=PAGE_SIZE, endingBefore=startAt)
 
     eventCount += len(pageEvents)
 
-    if args.json:
-      neJSON.write(json.dumps(pageEvents) + "\n")
-      neJSON.flush()
-
-    if args.csv:
-      for e in pageEvents:
-        neCSVwriter.writerow(e)
-      neCSV.flush()
+    
+    for event in pageEvents:
+      if args.json:
+        neJSON.write(json.dumps(event) + "\n")
+      if args.csv:
+        neCSVwriter.writerow(event)
+        
+    
+    if args.json: neJSON.flush()
+    if args.csv: neCSV.flush()
 
 
   if args.json:
