@@ -36,6 +36,7 @@ def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
     return [], 0, 0, 0
 
 
+
 if __name__ == "__main__":
   
     parser = argparse.ArgumentParser(description="""Small python script for downloading the meraki eventlog. The events are downloaded in reverse starting from now and proceeds until all events are parsed
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', action='store_const', const=True, help='verbose mode')
     parser.add_argument('-j', '--json', help='Export as json')
     parser.add_argument('-c', '--csv', help='Export es csv')
+  parser.add_argument('-p', '--product-type', help='Product type filter. Valid types are wireless, appliance, switch, systemsManager, camera, and cellularGateway. Defaults to wireless', default="wireless")
 
     args = parser.parse_args()
   
@@ -89,7 +91,7 @@ if __name__ == "__main__":
     pageNum += 1
 
     print("## Request Page %s (before %s)" % (pageNum, startAt))
-    pageEvents, startAt, endAt, fullPage = readPage(re, "https://api.meraki.com/api/v1/networks/%s/events" % args.network_id, productType="wireless", pageSize=PAGE_SIZE, endingBefore=startAt)
+    pageEvents, startAt, endAt, fullPage = readPage(re, "https://api.meraki.com/api/v1/networks/%s/events" % args.network_id, productType=args.product_type, pageSize=PAGE_SIZE, endingBefore=startAt)
 
     eventCount += len(pageEvents)
 
