@@ -31,7 +31,9 @@ def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
     print("API Limit reached, wait %ss" % response.headers["Retry-After"])
     time.sleep(int(response.headers["Retry-After"]))
     return readPage(re, baseURL, pageSize=pageSize, **params)
-
+  
+  else:
+    return [], 0, 0, 0
 
 
 if __name__ == "__main__":
@@ -106,4 +108,7 @@ if __name__ == "__main__":
   if args.csv:
     neCSV.close()
 
-  print("Exported %s Events" % eventCount)
+  if eventCount == 0:
+    print("No events found on this network")
+  else:
+    print("Exported %s Events" % eventCount)
