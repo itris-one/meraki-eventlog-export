@@ -101,25 +101,30 @@ if __name__ == "__main__":
     neCSVwriter.writeheader()
 
   eventCount = 0
-  while fullPage: # Continue as long as the number of results is equal to the page size.
-    pageNum += 1
 
-    print("Requesting page %s (before %s)" % (pageNum, startAt))
-    # API Documentation: https://developer.cisco.com/meraki/api/#!get-network-events
-    pageEvents, startAt, endAt, fullPage = readPage(re, "https://api.meraki.com/api/v1/networks/%s/events" % args.network_id, productType=args.product_type, pageSize=PAGE_SIZE, endingBefore=startAt)
+  try:
+    while fullPage: # Continue as long as the number of results is equal to the page size.
+      pageNum += 1
 
-    eventCount += len(pageEvents)
+      print("Requesting page %s (before %s)" % (pageNum, startAt))
+      # API Documentation: https://developer.cisco.com/meraki/api/#!get-network-events
+      pageEvents, startAt, endAt, fullPage = readPage(re, "https://api.meraki.com/api/v1/networks/%s/events" % args.network_id, productType=args.product_type, pageSize=PAGE_SIZE, endingBefore=startAt)
 
-    
-    for event in pageEvents:
-      if args.json:
-        neJSON.write(json.dumps(event) + "\n")
-      if args.csv:
-        neCSVwriter.writerow(event)
-        
-    
-    if args.json: neJSON.flush()
-    if args.csv: neCSV.flush()
+      eventCount += len(pageEvents)
+
+
+      for event in pageEvents:
+        if args.json:
+          neJSON.write(json.dumps(event) + "\n")
+        if args.csv:
+          neCSVwriter.writerow(event)
+
+
+      if args.json: neJSON.flush()
+      if args.csv: neCSV.flush()
+
+  except KeyboardInterrupt:
+    print("\nEvent download aborted")
 
 
   if args.json:
@@ -130,4 +135,4 @@ if __name__ == "__main__":
   if eventCount == 0:
     print("No events found on this network")
   else:
-    print("Exported %s Events" % eventCount)
+    print("Exported %s events" % eventCount)
