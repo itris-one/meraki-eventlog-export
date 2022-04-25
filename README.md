@@ -27,7 +27,7 @@ $ git clone https://github.com/itris-one/meraki-eventlog-export.git
 
 Install the virtualenv package:
 ```
-$ pip install virtualenv
+$ python -m pip install virtualenv
 ```
 
 Create and activate a new virtual environment:
@@ -44,7 +44,7 @@ $ python -m pip install -r requirements.txt
 ## How to Use
 
 ```
-python meraki_events.py --help                                                                                     :(
+$ python meraki_events.py --help                                                                                     :(
 usage: meraki_events.py [-h] [-k API_KEY] -n NETWORK_ID [-p PRODUCT_TYPE] [-j JSON] [-c CSV] [-v]
 
 Small python script for downloading the meraki eventlog. The events are downloaded in reverse starting from now and proceeds until all events are parsed Example: meraki_events.py
@@ -80,7 +80,7 @@ Switchover to [get-organizations-networks rest api doc](https://developer.cisco.
 ## Examples : 
 Getting all wireless network events from the DevNet Sandbox as CSV and JSON:
 ```
-python meraki_events.py -k 6bec40cf957de430a6f1f2baa056b99a4fac9ea0 -n L_566327653141843049 -c events.csv -j events.json
+$ python meraki_events.py -k 6bec40cf957de430a6f1f2baa056b99a4fac9ea0 -n L_566327653141843049 -c events.csv -j events.json
 Requesting page 1 (before None)
 Requesting page 2 (before 2022-04-24T12:33:06.173307Z)
 Requesting page 3 (before 2022-04-23T16:54:04.069118Z)
@@ -92,9 +92,9 @@ Requesting page 6 (before 2022-04-20T18:56:04.950773Z)
 
 Using environment variables instead of arguments:
 ```
-export MERAKI_API_KEY=6bec40cf957de430a6f1f2baa056b99a4fac9ea0
-export MERAKI_NET_ID=L_566327653141843049
-python meraki_events.py -j events.json -c events.csv
+$ export MERAKI_API_KEY=6bec40cf957de430a6f1f2baa056b99a4fac9ea0
+$ export MERAKI_NET_ID=L_566327653141843049
+$ python meraki_events.py -j events.json -c events.csv
 ```
 
 ## JSON Sample
