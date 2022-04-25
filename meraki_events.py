@@ -39,18 +39,23 @@ def readPage(re, baseURL, endingBefore=None, pageSize=1000, **params):
 
 if __name__ == "__main__":
   
-    parser = argparse.ArgumentParser(description="""Small python script for downloading the meraki eventlog. The events are downloaded in reverse starting from now and proceeds until all events are parsed
-    Example: meraki_events.py -k MERAKI_API_KEY
+  parser = argparse.ArgumentParser(description="""Small python script for downloading the meraki eventlog. The events are downloaded in reverse starting from now and proceeds until all events are parsed
+  Example: meraki_events.py -k MERAKI_API_KEY -n MERAKI_NET_ID -c events.csv
 """)
 
-    parser.add_argument('-k', '--api-key', help='Meraki API Key (X-Cisco-Meraki-API-Key)', default=os.environ.get("MERAKI_API_KEY"))
-    parser.add_argument('-n', '--network-id', help='Meraki Network ID', default=os.environ.get("MERAKI_NET_ID"))
-    parser.add_argument('-v', '--verbose', action='store_const', const=True, help='verbose mode')
-    parser.add_argument('-j', '--json', help='Export as json')
-    parser.add_argument('-c', '--csv', help='Export es csv')
+  parser.add_argument('-k', '--api-key', help='Meraki API Key (X-Cisco-Meraki-API-Key). The env variable MERAKI_API_KEY is used if available',
+                      default=os.environ.get("MERAKI_API_KEY"), required=os.environ.get("MERAKI_API_KEY")==None)
+  
+  parser.add_argument('-n', '--network-id', help='Meraki Network ID. The env variable MERAKI_NET_ID is used if available',
+                      default=os.environ.get("MERAKI_NET_ID"),  required=os.environ.get("MERAKI_NET_ID")==None)
+  
   parser.add_argument('-p', '--product-type', help='Product type filter. Valid types are wireless, appliance, switch, systemsManager, camera, and cellularGateway. Defaults to wireless', default="wireless")
-
-    args = parser.parse_args()
+  
+  parser.add_argument('-j', '--json', help='Export as json')
+  parser.add_argument('-c', '--csv', help='Export es csv')
+  parser.add_argument('-v', '--verbose', action='store_const', const=True, help='verbose mode')
+    
+  args = parser.parse_args()
   
   
   re = requests.Session()
@@ -62,10 +67,12 @@ if __name__ == "__main__":
 
   if args.verbose:
       log.basicConfig(level=log.DEBUG)
-      
-  if not args.api_key or not args.network_id:
-        parser.print_help()
-        exit(1)
+        
+  if not args.json and not args.csv:
+    parser.print_help()
+    
+    print("\nat least one export type is required\n")
+    exit(1)
 
   startAt = None
   fullPage = True
