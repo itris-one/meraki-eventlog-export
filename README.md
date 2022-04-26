@@ -115,3 +115,5 @@ ccurredAt,networkId,type,description,clientId,clientDescription,deviceSerial,dev
 2022-04-25T13:56:22.106483Z,L_566327653141843049,association,802.11 association,kd9a3d9,Shannons-MacBook-Air,Q2LD-ZWCZ-XXXX,Office AP,0,Lyoli,"{'channel': '1', 'rssi': '59'}"
 2022-04-25T13:50:18.069197Z,L_566327653141843049,aps_association_reject,802.11 association rejected for client balancing,kfadf16,android-384d36fc4262XXXX,Q2LD-GYL3-XXXX,1st Floor AP,,,"{'load': '3', 'best_ap': '192.168.1.123', 'best_ap_load': '0', 'best_ap_rssi': '40'}"
 ```
+
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/itris-one/meraki-eventlog-export)
